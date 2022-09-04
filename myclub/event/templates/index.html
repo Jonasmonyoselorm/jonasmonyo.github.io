@@ -1,1 +1,14 @@
-<h1>Hello Mr. Jonas</h1>
+
+<center>
+    <br>
+    <h1>Hello Mr/Mrs. {{ last_name }}. 
+        <br> 
+        The event for {{ month }}, {{year}}</h1>
+
+    As of {{ currentTime }}
+    {{ calender|safe }}
+
+    <br>
+    
+    Copyright (c) {{currentYear}}.
+</center>
