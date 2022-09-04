@@ -17,3 +17,6 @@ python manage.py createsuperuser
 
 ***USING GITBASH
 winpty python manage.py createsuperuser
+
+
+

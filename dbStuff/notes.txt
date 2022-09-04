@@ -1,0 +1,21 @@
+************DATABASE STUFF*************
+
+  Models = tables definition
+
+    models.py
+        from django.db import models
+
+        class tableName(models.Model):
+            columnName = models.dataType(constraint)
+
+            def __str__(self):
+                return self.columnName
+
+    admin.py
+        from .models import tableNames
+        
+        admin.site.register(tableNames)
+
+Terminal
+    >> python manage.py makemigrations
+    >> python manage.py migrate
