@@ -1,0 +1,19 @@
+$ python -m venv virt   #this creates virtual environment call virt
+$ source virt/Scripts/activate  #to activate the virtual envrionment
+$ deactivate #to disable the virtual environment
+
+$ pip freeze # to view all installed packages in python
+
+
+
+DB Migrations **********
+python manage.py makemigrations
+python manage.py migrate
+
+
+***********Creat django Admin user*****************
+
+python manage.py createsuperuser
+
+***USING GITBASH
+winpty python manage.py createsuperuser
