@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    
+    <center>
+        <h1>Add Events</h1>
+        <hr>
+        <br>
+    </center>
+        {% if submitted %}
+            Your Event has been Submitted Successfully!!!
+        {% else %}
+            <!-- Add forms -->
+            <form action="" method="POST">
+                {% csrf_token %}
+                
+                <!-- add form to page -->
+                {{ addEventForm.as_p }}
+
+                <input class="btn btn-outline-success" type="submit" value="Submit"/>
+
+
+
+            </form>
+        {% endif %}
+     
+    
+    
+
+
+{% endblock %}

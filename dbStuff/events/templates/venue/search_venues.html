@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    
+    <center>
+
+        <!-- searched output -->
+        {% if searchedWord %}
+            <h1>You searched for {{ searchedWord }}</h1> 
+            <br>
+
+            <!-- searched record output -->
+            
+                 <br>
+            
+            <table class="table table-hover table-striped table-bordered">
+
+                {% for SearchVenue in SearchVenue %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'events:show-venue' SearchVenue.id %}">{{ SearchVenue }} - {{ SearchVenue.veune_web }} </a>
+                        </td>
+                    </tr>
+                {% endfor %}  
+            
+            </table>
+
+        {% else %}
+            <h1>Hey! You forgot to Enter a word to search for a Venue...</h1>
+        {% endif %}
+
+    </center>
+
+{% endblock %}

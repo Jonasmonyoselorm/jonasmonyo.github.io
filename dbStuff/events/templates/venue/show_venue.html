@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+         <br>
+        <br>
+         <br>
+         </a> <br>
+         <br>
+
+
+        <div class="card">
+            <div class="card-header">
+                <strong class="text-uppercase">Venue</strong>
+            </div>
+
+            <div class="card-body">
+                <h5 class="card-title">{{ ShowVenue }}</h5>
+                <p class="card-text">
+                    <ul>
+                        <li>Address: {{ ShowVenue.veune_address }} </li>
+                        <li>Zip Code: {{ ShowVenue.veune_zip_code }} </li>
+                        <li>Phone: {{ ShowVenue.veune_phone }} </li>
+                        <li>Website: <a href="#">{{ ShowVenue.veune_web }}</a> </li>
+                        <li><b>Email:</b> <br>
+                            {{ ShowVenue.veune_email_address }}
+                        </li>
+                    </ul>
+                </p> 
+            </div>
+        </div>  
+    
+    
+
+
+{% endblock %}

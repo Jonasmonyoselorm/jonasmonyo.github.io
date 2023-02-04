@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    
+    <center>
+        <h1>Add Venue</h1>
+        <hr>
+        <br>
+
+        {% if submitted %}
+            Your Venue Was Submitted Successfully!!!
+        {% else %}
+            <!-- Add forms -->
+            <form action="" method="POST">
+                {% csrf_token %}
+                
+                <!-- add form to page -->
+                {{ addVenueForm.as_p }}
+
+                <input class="btn btn-secondary" type="submit" value="Submit"/>
+
+
+
+            </form>
+        {% endif %}
+        
+    </center>    
+    
+    
+
+
+{% endblock %}
