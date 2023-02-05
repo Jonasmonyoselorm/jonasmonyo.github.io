@@ -5,11 +5,12 @@ app_name = 'events'
 urlpatterns = [
     path('', views.index, name='index'),
 
-    # CREATE TxT FILE
+    # CREATE TEXT FILE
     path('venue_text', views.venue_text, name='venue-text'),
-
-    # CREATE csv FILE
+    # CREATE CSV FILE
     path('venue_csv', views.venue_csv, name='venue-csv'),
+    # CREATE PDF FILE
+    path('venue_pdf', views.venue_pdf, name='venue-pdf'),
 
     # CREATE SEARCH BUTTON
     path('search', views.search_venues, name='search-venue'),

@@ -1,12 +1,13 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    
-    <center>
-        <h1>Add Events</h1>
-        <hr>
-        <br>
-    </center>
+    {% if user.is_authenticated %}
+        <center>
+            <h1>Add Events</h1>
+            <hr>
+            <br>
+        </center>
+
         {% if submitted %}
             Your Event has been Submitted Successfully!!!
         {% else %}
@@ -17,13 +18,24 @@
                 <!-- add form to page -->
                 {{ addEventForm.as_p }}
 
-                <input class="btn btn-outline-success" type="submit" value="Submit"/>
-
-
+                <div align="right">
+                    <input class="btn btn-outline-success" type="submit" value="Submit"/>
+                </div>
 
             </form>
         {% endif %}
      
+    {% else %}
+        <div class="alert alert-danger d-flex alert-dismissible fade show" role="alert">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+            <strong>
+                <p>Sorry You have to Log in first...</p>                
+            </strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <a href="{% url 'members:login-Page' %}">Login Here</a>
+    {% endif %}
     
     
 

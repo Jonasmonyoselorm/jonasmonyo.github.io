@@ -10,30 +10,69 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'events:add-events' %}">Add Event</a>
+                
+                <!-- Events Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Events
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        {% if user.is_authenticated %}
+                            <li><a class="dropdown-item" href="{% url 'events:add-events' %}">Add Event</a></li>
+                        {% endif %}
+                        
+                        <li><a class="dropdown-item" href="{% url 'events:list-events' %}">Events</a></li>
+                    </ul>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'events:list-events' %}">Events</a>
+                <!-- Venue Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Venue
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        {% if user.is_authenticated %}
+                            <li><a class="dropdown-item" href="{% url 'events:add-venue' %}">Add Venue</a></li>
+                        {% endif %}
+                        
+                        <li><a class="dropdown-item" href="{% url 'events:list-venue' %}">Venues</a></li>
+                    </ul>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'events:add-venue' %}">Add Venue</a>
-                </li>
+                <!-- Downloads Dropdown -->
+                {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Downloads
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="{% url 'events:venue-text' %}">Download Venues.txt</a></li>
+                        <li><a class="dropdown-item" href="{% url 'events:venue-csv' %}">Download Venues.csv</a></li>
+                        <!-- <li><hr class="dropdown-divider"></li> -->
+                        <li><a class="dropdown-item" href="{% url 'events:venue-pdf' %}">Download Venues.pdf</a></li>
+                        </ul>
+                    </li>
+                {% endif %}
 
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'events:list-venue' %}">Venues</a>
-                </li>
+                
 
+                <!-- Login & Logout button -->
+                {% if user.is_authenticated %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'events:venue-text' %}">Download Venues.txt</a>
+                    <a class="nav-link" href="{% url 'members:logout-Page' %}">Logout</a>
                 </li>
+                {% else %}
+                    <!-- Register -->
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'members:register-user' %}">Register</a>
+                    </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'events:venue-csv' %}">Download Venues.csv</a>
-                </li>
+                    <!-- Login -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'members:login-Page' %}">Login</a>
+                    </li>
+                {% endif %}
             </ul>
 
             <form class="d-flex" method="POST" action="{% url 'events:search-venue' %}">

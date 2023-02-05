@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    
+    <div class="shadow p-5 mb-5 bg-body rounded">
+        <center>
+            <h1>Register</h1>
+            <hr>
+            <br>
+        </center>
+        
+        <!-- Messages -->
+        
+        {% if userRegistrationForm.errors %}
+            <div class="alert alert-danger d-flex alert-dismissible fade show" role="alert">
+                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                <strong>
+                    <p>There was an error with your form...</p>                
+                </strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
+        
+        <!-- Add forms -->
+        <form action="{% url 'members:register-user' %}" method="POST">
+            {% csrf_token %}
+
+            {{ userRegistrationForm.as_p }}
+
+            <br>
+            <div align="right">
+                <input class="btn btn-outline-success" type="submit" value="Submit"/>
+            </div>
+
+
+        </form>
+    </div>
+    
+    
+
+
+{% endblock %}

@@ -6,6 +6,17 @@ from .forms import VenueForm, EventForm
 from django.http import HttpResponse  # to help generate text file
 import csv  # to help generate csv files
 
+# FOR PDF IMPORT ALL
+from django.http import FileResponse
+import io
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
+from reportlab.lib.pagesizes import letter
+
+# Import Pagination Stuff
+from django.core.paginator import Paginator
+
+
 # Create your views here.
 
 # hompage
@@ -63,11 +74,61 @@ def venue_csv(request):
 
     # Loop Through and Output
     for venue in venueTextOutput:
-        # adding DB columns to the csv file
+        # adding DB columns to the csv filegit
         csvWriter.writerow(
             [venue.venue_name, venue.veune_address, venue.veune_zip_code, venue.veune_phone, venue.veune_web, venue.veune_email_address])
 
     return textResonse
+
+# GENERATE A TEXT FILE
+# befor you begin, install reportLab in the terminal (pip install)
+
+
+def venue_pdf(request):
+    # Create Bytestream buffer
+    buf = io.BytesIO()
+    # Create a canvas
+    c = canvas.Canvas(buf, pagesize=letter, bottomup=0)
+    # Create a text object
+    textob = c.beginText()
+    textob.setTextOrigin(inch, inch)
+    textob.setFont('Helvetica', 14)
+
+    #  Add some lines of text
+    # lines = [
+    #     "This is line 1",
+    #     "This is line 2",
+    #     "This is line 3",
+    #     "This is line 4",
+    # ]
+
+    # Designate the VENUE Model
+    venueToPdf = Venue.objects.all()
+
+    # Create blank list
+    line = []
+
+    for venue in venueToPdf:
+        line.append(venue.venue_name)
+        line.append(venue.veune_address)
+        line.append(venue.veune_zip_code)
+        line.append(venue.veune_phone)
+        line.append(venue.veune_web)
+        line.append(venue.veune_email_address)
+        line.append("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+
+    # Loop
+    for line in line:
+        textob.textLine(line)
+
+    # Finish up
+    c.drawText(textob)
+    c.showPage()
+    c.save()
+    buf.seek(0)
+
+    # Return something
+    return FileResponse(buf, as_attachment=True, filename='venue.pdf')
 
 # ADD SEARCH BUTTON ON PAGE
 
@@ -176,8 +237,17 @@ def list_venue(request):
     # use '?' in .order_by to make list random when page loads
     VenueList = Venue.objects.all().order_by('venue_name')
 
+    # Set up Paginatoion
+    p = Paginator(Venue.objects.all(), 2)
+    page = request.GET.get('page')
+    venuePagination = p.get_page(page)
+    # multiply each number by a sting "a"
+    nums = "a" * venuePagination.paginator.num_pages
+
     return render(request, 'venue/venue_lists.html', {
-        'VenueList': VenueList
+        'VenueList': VenueList,  # to output the query result on the page
+        'venuePagination': venuePagination,  # output query by paginations
+        'showNums': nums  # to pass the page numbers on the page
     })
 
 # view venues in a separet page
