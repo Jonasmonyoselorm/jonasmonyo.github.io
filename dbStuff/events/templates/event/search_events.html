@@ -1,15 +1,45 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <strong class="text-uppercase">
+                    {% if searchedWord %}
+                        You searched for {{ searchedWord }}
+                    {% else %}
+                        Hey! You forgot to Enter a word to search for a Venue...
+                    {% endif %}
+                </strong>
+            </div>
+
+            <div class="card-body">
+                <h5 class="card-title">  </h5>
+                <p class="card-text">                            
+                    <form method="POST" action="{% url 'events:search-events' %}">
+                        {% csrf_token %}
+
+                        <input class="form-control me-2" type="search" placeholder="Search venue" aria-label="Search" name="searched">
+                        <br>
+                        <button class="btn btn-outline-success btn-sm" type="submit">Search</button>
+
+                    </form>
+                </p> 
+            </div>                    
+        </div>
+    </div>
+    <br>
+
+    <!-- searched output -->
     
-    <h1>All Events</h1>
-    
-    {% for event in eventsList %}
-        {% if event.approveEvent %}
+
+        <!-- searched record output -->
+        
+        {% for SearchEvent in SearchEvent %}
             <div class="container">
                 <div class="card">
                     <div class="card-header">
-                        <strong class="text-uppercase">{{ event }}</strong>
+                        <strong class="text-uppercase">{{ SearchEvent.event_name }}</strong>
                     </div>
         
                     <div class="card-body">
@@ -17,8 +47,6 @@
                         <p class="card-text">
                             <ul>
                                 <li>Date: {{ event.event_date }} </li>
-                                <li>Date Till: {{ event.Days_till }}</li>
-                                <li>Occured: {{ event.Is_Past }}</li>
                                 <li>Venue URL: {{ event.event_venue.veune_web }} </li>
                                 <li>Organizer: {{ event.event_organizer }} </li>
                                 <li>Description: {{ event.event_description }} </li>
@@ -27,7 +55,6 @@
                                         {{ USER }} <br>
                                     {% endfor %}
                                 </li>
-                                <li>Approved: {{ event.approveEvent }} </li>
                             </ul>
                         </p> 
                     </div>
@@ -45,24 +72,8 @@
                     {% endif %}
                 </div>
             </div>
-        {% endif %}
-        <br>
-        
-    {% endfor %}
+        {% endfor %}           
+
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 {% endblock %}

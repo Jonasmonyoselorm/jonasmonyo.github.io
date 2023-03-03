@@ -1,11 +1,22 @@
 from django.shortcuts import render
+# working with calender
+import calendar
+from calendar import HTMLCalendar
+from datetime import datetime
+# to redicrect to different page
 from django.http import HttpResponseRedirect
+# Import all DBs tables
 from .models import Event, Venue
-from .forms import VenueForm, EventForm
-
-from django.http import HttpResponse  # to help generate text file
-import csv  # to help generate csv files
-
+# Import USER model
+from django.contrib.auth.models import User
+# Import forms from "forms.py"
+from .forms import VenueForm, EventFormUsers, EventFormAdmin
+# to diplay message on pages
+from django.contrib import messages
+# to help generate text file
+from django.http import HttpResponse
+# to help generate csv files
+import csv
 # FOR PDF IMPORT ALL
 from django.http import FileResponse
 import io
@@ -19,12 +30,119 @@ from django.core.paginator import Paginator
 
 # Create your views here.
 
-# hompage
+# hompage and calender
+def index(request, year=datetime.now().year, month=datetime.now().strftime('%B')):
+    name = "Monyo"
+
+    month = month.capitalize()  # convert case to initial case letters
+
+    # Convert month name to number
+    month_number = list(calendar.month_name).index(month)
+    month_number = int(month_number)
+
+    # create a calendar
+    cal = HTMLCalendar().formatmonth(
+        year,
+        month_number
+    )
+
+    # Get current year and date
+    timeNow = datetime.now()
+    current_year = timeNow.year
+
+    # Query the Event Modal for Dates
+    EventInMonth = Event.objects.filter(
+        event_date__year=year,
+        # Assign the month number, you can enter the month number (1,2,3,4,...12)
+        event_date__month=month_number,
+    )
+
+    # Get current time
+
+    # READ datetime @ gooogle, python datetime
+    time = timeNow.strftime('%D %I:%M:%S %A')
+
+    return render(request, 'index.html', {
+        "last_name": name,
+        "year": year,
+        "month": month,
+        "mon_number": month_number,
+        "calender": cal,
+        "currentYear": current_year,
+        "currentTime": time,
+        "AllEventInMonth": EventInMonth,
+    })
+
+# ADMIN DASHBOARD
 
 
-def index(request):
-    return render(request, 'index.html', {})
+def admin_dashboard(request):
+    # fetch all venue
+    vennueWithEvent = Venue.objects.all()
 
+    # count the total in database
+    event_count = Event.objects.all().count()
+    venue_count = Venue.objects.all().count()
+    user_connt = User.objects.all().count()
+
+    # update approvals in Database
+    allEventToApprove = Event.objects.all().order_by('-event_date')
+    if request.user.is_superuser:
+        if request.method == "POST":
+            id_list = request.POST.getlist('approvedCheckboxes')
+
+            # uncheck all events
+            allEventToApprove.update(approveEvent=False)
+
+            # update the database
+            for x in id_list:
+                Event.objects.filter(pk=int(x)).update(
+                    approveEvent=True)  # convert the pk to integer first
+
+            messages.success(request, ("Events approval has been updated"))
+            return HttpResponseRedirect('/events')
+        else:
+            return render(request, 'event/admin_approval.html', {
+                'allEventToApprove': allEventToApprove,
+                'totalEvents': event_count,
+                'totalVenue': venue_count,
+                'totalUsers': user_connt,
+                'vennueWithEvent': vennueWithEvent,
+            })
+    else:
+        messages.success(
+            request, ("You are not authorized to view this page..."))
+        return HttpResponseRedirect('/')
+
+# Venue and Event page
+
+
+def venue_event(request, venue_id):
+    # Grab the venue
+    venueWanted = Venue.objects.get(id=venue_id)
+    # Grab the events for the venueWanted
+    showEvents = venueWanted.event_set.all()
+
+    if showEvents:
+        return render(request, 'event/venue_and_event.html', {
+            'showEvents': showEvents,
+        })
+    else:
+        messages.success(request, ("No Events available..."))
+        return HttpResponseRedirect('event/admin_dashboard')
+
+
+# MY EVENTS
+def my_events(request):
+    if request.user.is_authenticated:
+        me = request.user.id
+        events = Event.objects.filter(attendees=me).order_by('event_date')
+        return render(request, 'event/my_events.html', {
+            'my_eventsEvents': events,
+        })
+    else:
+        messages.success(request, ("You are not authorized view this page..."))
+        return HttpResponseRedirect('/')
 # GENERATE A TEXT FILE
 
 
@@ -130,7 +248,7 @@ def venue_pdf(request):
     # Return something
     return FileResponse(buf, as_attachment=True, filename='venue.pdf')
 
-# ADD SEARCH BUTTON ON PAGE
+# ADD SEARCH VENUE BUTTON ON PAGE
 
 
 def search_venues(request):
@@ -147,6 +265,23 @@ def search_venues(request):
     else:
         return render(request, 'venue/search_venues.html', {})
 
+# ADD SEARCH EVENTS ON PAGE
+
+
+def search_events(request):
+    if request.method == "POST":
+        # receiving word from the search input
+        searchedWord = request.POST['searched']
+        # make search by venue_name in the model
+        SearchEvent = Event.objects.filter(event_name__contains=searchedWord)
+
+        return render(request, 'event/search_events.html', {
+            'searchedWord': searchedWord,
+            'SearchEvent': SearchEvent
+        })
+    else:
+        return render(request, 'event/search_events.html', {})
+
 
 # EVENTS SECTION VIEW
 # Selecting from the Event TABLE IN DATABASE
@@ -155,12 +290,32 @@ def search_venues(request):
 def add_events(request):
     submitted = False
     if request.method == "POST":
-        addEventForm = EventForm(request.POST)
-        if addEventForm.is_valid():
-            addEventForm.save()
-            return HttpResponseRedirect('/addevents')
+        # if request.user.id == 4:
+        if request.user.is_superuser:
+            addEventForm = EventFormAdmin(request.POST)
+
+            # form validation
+            if addEventForm.is_valid():
+                addEventForm.save()
+                return HttpResponseRedirect('/addevents')
+        else:
+            addEventForm = EventFormUsers(request.POST)
+
+            # form validation
+            if addEventForm.is_valid():
+                # addEventForm.save()
+
+                event = addEventForm.save(commit=False)
+                event.event_organizer = request.user  # linking to logged-in-user "request.user"
+                event.save()
+                return HttpResponseRedirect('/addevents')
     else:
-        addEventForm = EventForm
+        # just load the page when visited
+        if request.user.is_superuser:
+            addEventForm = EventFormAdmin
+        else:
+            addEventForm = EventFormUsers
+
         if 'submitted' in request.GET:
             submitted = True
 
@@ -187,7 +342,14 @@ def all_events(request):
 
 def update_event(request, event_id):
     eventToUpdate = Event.objects.get(pk=event_id)
-    EventFormToUpdate = EventForm(request.POST or None, instance=eventToUpdate)
+    # Check which user form to display by user
+    if request.user.is_superuser:
+        EventFormToUpdate = EventFormAdmin(
+            request.POST or None, instance=eventToUpdate)
+    else:
+        EventFormToUpdate = EventFormUsers(
+            request.POST or None, instance=eventToUpdate)
+
     if EventFormToUpdate.is_valid():
         EventFormToUpdate.save()
         return HttpResponseRedirect('/events')
@@ -202,8 +364,13 @@ def update_event(request, event_id):
 
 def delete_event(request, event_id):
     eventToDelete = Event.objects.get(pk=event_id)
-    eventToDelete.delete()
-    return HttpResponseRedirect('/events')
+    if request.user == eventToDelete.event_organizer:
+        eventToDelete.delete()
+        messages.success(request, ("Event Deleted"))
+        return HttpResponseRedirect('/events')
+    else:
+        messages.success(request, ("You are not authorized to do that"))
+        return HttpResponseRedirect('/events')
 
 
 # VENUE SECTION VIEW
@@ -214,9 +381,13 @@ def add_venue(request):
     submitted = False
 
     if request.method == "POST":
-        addVenueForm = VenueForm(request.POST)  # RECEIVING FORM FIELDS
+        # RECEIVING FORM FIELDS
+        addVenueForm = VenueForm(request.POST, request.FILES)
         if addVenueForm.is_valid():
-            addVenueForm.save()
+            venue = addVenueForm.save(commit=False)
+            venue.owner = request.user.id  # linking to logged-in-user
+            venue.save()
+            # addVenueForm.save()
             return HttpResponseRedirect('/addvenue?submitted=True')
     else:
         addVenueForm = VenueForm  # RECEIVING FORM FIELDS
@@ -255,8 +426,11 @@ def list_venue(request):
 
 def show_venues(request, venue_id):
     ShowVenue = Venue.objects.get(pk=venue_id)
+    venue_owner = User.objects.get(pk=ShowVenue.owner)
+
     return render(request, 'venue/show_venue.html', {
-        'ShowVenue': ShowVenue
+        'ShowVenue': ShowVenue,
+        'venue_owner': venue_owner,
     })
 
 
@@ -264,7 +438,8 @@ def show_venues(request, venue_id):
 
 def update_venue(request, venue_id):
     venueToUpdate = Venue.objects.get(pk=venue_id)
-    VenueFormToUpdate = VenueForm(request.POST or None, instance=venueToUpdate)
+    VenueFormToUpdate = VenueForm(
+        request.POST or None, request.FILES or None, instance=venueToUpdate)
     if VenueFormToUpdate.is_valid():
         VenueFormToUpdate.save()
         return HttpResponseRedirect('/list_venues')
@@ -281,3 +456,25 @@ def delete_venue(request, venue_id):
     venueToDelet = Venue.objects.get(pk=venue_id)
     venueToDelet.delete()
     return HttpResponseRedirect('/list_venues')
+
+
+# PYTHON DIAMOND PATTERN
+
+def python_diamond_pattern():
+    rows = 8
+
+    # upper pyramid
+    for i in range(1, rows):
+        for j in range(1, rows - i):
+            print(' ', end='')
+        for j in range(0, 2 * i - 1):
+            print('*', end='')
+        print()
+
+    # lower pyramid
+    for i in range(rows - 2, 0, -1):
+        for j in range(1, rows - i):
+            print(' ', end='')
+        for j in range(1, 2 * i):
+            print('*', end='')
+        print()

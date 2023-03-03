@@ -1,34 +1,57 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
+    <!-- searched output -->
+    {% if searchedWord %}
+        <h1>You searched for {{ searchedWord }}</h1> 
+        <br>
+
+        <!-- searched record output -->
+        {% for SearchVenue in SearchVenue %}
+            <div class="card">
+                <div class="card-header">
+                    <strong class="text-uppercase">{{ SearchVenue }}</strong>
+                </div>
     
-    <center>
+                <div class="card-body">
+                    <h5 class="card-title"></h5>
+                    <p class="card-text">
+                        <ul>
+                            {% if SearchVenue.veune_address %}
+                                <li>Address: {{ SearchVenue.veune_address }} </li>
+                            {% endif %}
 
-        <!-- searched output -->
-        {% if searchedWord %}
-            <h1>You searched for {{ searchedWord }}</h1> 
+                            {% if SearchVenue.veune_zip_code %}
+                                <li>Zip Code: {{ SearchVenue.veune_zip_code }} </li>
+                            {% endif %}
+
+                            {% if SearchVenue.veune_phone %}
+                                <li>Phone: {{ SearchVenue.veune_phone }} </li>
+                            {% endif %}
+
+                            {% if SearchVenue.veune_web %}
+                                <li>Website: <a href="#">{{ SearchVenue.veune_web }}</a> </li>
+                            {% endif %}
+
+                            {% if SearchVenue.veune_email_address %}
+                            <li><b>Email:</b> <br>
+                                {{ SearchVenue.veune_email_address }}
+                            </li>
+                            {% endif %}
+                            
+                            {% if SearchVenue.owner %}
+                                <li>Created By: {{ SearchVenue.owner }} </li>
+                            {% endif %}
+                        </ul>
+                    </p> 
+                </div>
+            </div> 
             <br>
+        {% endfor %}  
 
-            <!-- searched record output -->
-            
-                 <br>
-            
-            <table class="table table-hover table-striped table-bordered">
-
-                {% for SearchVenue in SearchVenue %}
-                    <tr>
-                        <td>
-                            <a href="{% url 'events:show-venue' SearchVenue.id %}">{{ SearchVenue }} - {{ SearchVenue.veune_web }} </a>
-                        </td>
-                    </tr>
-                {% endfor %}  
-            
-            </table>
-
-        {% else %}
-            <h1>Hey! You forgot to Enter a word to search for a Venue...</h1>
-        {% endif %}
-
-    </center>
+    {% else %}
+        <h1>Hey! You forgot to Enter a word to search for a Venue...</h1>
+    {% endif %}
 
 {% endblock %}

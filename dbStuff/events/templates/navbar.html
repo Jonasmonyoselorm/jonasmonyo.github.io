@@ -19,9 +19,10 @@
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         {% if user.is_authenticated %}
                             <li><a class="dropdown-item" href="{% url 'events:add-events' %}">Add Event</a></li>
+                            <li><a class="dropdown-item" href="{% url 'events:my-events' %}">My Event</a></li>
                         {% endif %}
-                        
-                        <li><a class="dropdown-item" href="{% url 'events:list-events' %}">Events</a></li>
+                        <li><a class="dropdown-item" href="{% url 'events:search-events' %}">Search Event</a></li>
+                        <li><a class="dropdown-item" href="{% url 'events:list-events' %}">All Events</a></li>
                     </ul>
                 </li>
 
@@ -58,9 +59,16 @@
 
                 <!-- Login & Logout button -->
                 {% if user.is_authenticated %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'members:logout-Page' %}">Logout</a>
-                </li>
+                    <!-- admin Dashboard -->
+                    {% if user.is_superuser%}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'events:admin-dashboard' %}">Admin</a>
+                        </li>
+                    {% endif %}
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'members:logout-Page' %}">Logout</a>
+                    </li>
                 {% else %}
                     <!-- Register -->
                     

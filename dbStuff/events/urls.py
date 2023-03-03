@@ -12,8 +12,17 @@ urlpatterns = [
     # CREATE PDF FILE
     path('venue_pdf', views.venue_pdf, name='venue-pdf'),
 
-    # CREATE SEARCH BUTTON
+    # CREATE SEARCH VENUE
     path('search', views.search_venues, name='search-venue'),
+
+    # CREATE SEARCH EVENT
+    path('search_events', views.search_events, name='search-events'),
+
+    # ADMIN DASHBOARD
+    path('admin_dashboard', views.admin_dashboard, name='admin-dashboard'),
+
+    # VENUE AND EVENTS
+    # path('venue_event/<venue_id>', views.venue_event, name='venue-event'),
 
     # EVENT PATHs
     path('addevents/', views.add_events, name='add-events'),
@@ -27,5 +36,9 @@ urlpatterns = [
     path('show_venue/<venue_id>', views.show_venues, name='show-venue'),
     path('update_venue/<venue_id>', views.update_venue, name='update-venue'),
     path('delete_venue/<venue_id>', views.delete_venue, name='delete-venue'),
+
+    # MY EVENTS
+    path('my_events', views.my_events, name='my-events'),
+
 
 ]

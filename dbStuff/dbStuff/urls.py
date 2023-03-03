@@ -16,6 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+# for image files
+from django.conf import settings
+from django.conf.urls.static import static
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     # Event App
@@ -24,7 +29,7 @@ urlpatterns = [
     # Members App
     path('members/', include('django.contrib.auth.urls')),  # for authentication
     path('members/', include('members.urls')),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
 # CUSTOMIZE THE ADMIN SECTION

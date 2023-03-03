@@ -2,6 +2,8 @@ from unicodedata import name
 from django.db import models
 
 from django.contrib.auth.models import User
+from datetime import date
+
 
 # Create your models here.
 
@@ -17,6 +19,8 @@ class Venue(models.Model):
         'Contact Phone', max_length=10, blank=True)
     veune_web = models.URLField('Website Address', blank=True)
     veune_email_address = models.EmailField('Email Address', blank=True)
+    owner = models.IntegerField("Venue Owner", blank=False, default=1)
+    venue_image = models.ImageField(null=True, blank=True, upload_to="images/")
 
     def __str__(self):
         # Column to you see in admin db when you open the table
@@ -49,8 +53,25 @@ class Event(models.Model):
     event_organizer = models.ForeignKey(
         User, blank=True, null=True, on_delete=models.SET_NULL)
     event_description = models.TextField(blank=True)
-
     attendees = models.ManyToManyField(MyClubUser, blank=True)
+    approveEvent = models.BooleanField("Approved Event", default=False)
 
     def __str__(self):
         return self.event_name  # Columns you see in admin db when you open the table
+
+    # Calculating days left for Event
+    @property
+    def Days_till(self):
+        today = date.today()
+        daysTill = self.event_date.date() - today
+        daysTillStripped = str(daysTill).split(",", 1)[0]
+        return daysTillStripped
+
+    @property
+    def Is_Past(self):
+        today = date.today()
+        if self.event_date.date() <= today:
+            event = "Past or It's today"
+        else:
+            event = "Future"
+        return event

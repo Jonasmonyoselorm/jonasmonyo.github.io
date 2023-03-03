@@ -3,19 +3,42 @@
 {% block content %}
     
     {% if user.is_authenticated %}
-        <h1>Edit Event...</h1>
-        <br>
-        <form action="" method="POST">
-            {% csrf_token%}
-            
-            <!-- display forms -->
-            {{ eventFormToUpdate.as_p }}
+        {% if user == eventToUpdate.event_organizer %}
 
-            <!-- update button -->
-            <div align="right">
-                <input type="submit" value="Update" class="btn btn-success">
+            <h1>Edit Event...</h1>
+            <br>
+            Logged In User: {{ user }}
+            <br><br>
+            Event Manager: {{ eventToUpdate.event_organizer }}
+            <br><br>    
+            <form action="" method="POST">
+                {% csrf_token%}
+                
+                <!-- display forms -->
+                {{ eventFormToUpdate.as_p }}
+
+                <!-- update button -->
+                <div align="right">
+                    <input type="submit" value="Update" class="btn btn-success">
+                </div>
+            </form>
+
+        {% else %}
+            <h2>Access Denied</h2>
+            
+            <div class="alert alert-danger d-flex alert-dismissible fade show" role="alert">
+                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                <strong>
+                    <p>Only the Event's manager can update this event...</p>               
+                </strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-        </form>
+
+            <br>
+            Logged In User: {{ user }} <br>
+            Event Manager: {{ eventToUpdate.event_organizer }}
+        {% endif %}
+
     {% else %}
         <div class="alert alert-danger d-flex alert-dismissible fade show" role="alert">
             <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>

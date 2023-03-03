@@ -25,8 +25,13 @@
                         <li><b>Email:</b> <br>
                             {{ ShowVenue.veune_email_address }}
                         </li>
+                        <li>Created By: {{ venue_owner }} </li>
                     </ul>
                 </p> 
+                <br>
+                {% if ShowVenue.venue_image %}
+                    <img src="{{ ShowVenue.venue_image.url }}" width="200"/>
+                {% endif %}
             </div>
         </div>  
     
