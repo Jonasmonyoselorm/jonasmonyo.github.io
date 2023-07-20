@@ -16,7 +16,24 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+# for image files
+from django.conf import settings
+from django.conf.urls.static import static
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # Event App
     path('', include('events.urls')),
-]
+
+    # Members App
+    path('members/', include('django.contrib.auth.urls')),  # for authentication
+    path('members/', include('members.urls')),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+# CUSTOMIZE THE ADMIN SECTION
+# Configure Amin Titles
+admin.site.site_header = "My Events Admin"
+admin.site.site_title = "DB Stuff"
+admin.site.index = "Admin Page"

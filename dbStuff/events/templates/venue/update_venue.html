@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        <h1>Edit Venue...</h1>
+        <br>
+        <form action="" method="POST" enctype="multipart/form-data">
+            {% csrf_token%}
+            
+            <!-- display forms -->
+            {{ VenueFormToUpdate.as_p }}
+
+            <!-- update button -->
+            <div align="right">
+                <input type="submit" value="Update" class="btn btn-success">
+            </div>
+
+        </form>
+
+    {% else %}
+        <div class="alert alert-danger d-flex alert-dismissible fade show" role="alert">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+            <strong>
+                <p>Sorry You have to Log in first...</p>                
+            </strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <a href="{% url 'members:login-Page' %}">Login Here</a>
+    {% endif %}
+{% endblock %}

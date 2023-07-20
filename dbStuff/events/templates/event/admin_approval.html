@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    
+    <center>
+        <h1>Admin Dashboard</h1>
+        <br>
+    </center>
+
+    <!-- Total count output -->
+    <div class="card">
+        <div class="card-header">
+          Total count of Categories
+        </div>
+        <div class="card-body">
+          <p class="card-text">Total Events: {{ totalEvents }}</p>
+          <p class="card-text">Total Venue: {{ totalVenue }}</p>
+          <p class="card-text">Total Users: {{ totalUsers }}</p>
+        </div>
+    </div>
+    <br>
+
+    <!-- All venue and their Events -->
+    <table class="table table-striped table-hover table-bordered">
+        <thead align="center">
+                <tr>
+                    <th>Venue Name</th>
+                    <th>Events</th>
+                </tr>
+        </thead>
+        <tbody>
+            {% for venue in vennueWithEvent %}
+                <tr>
+                    <td>
+                        <a href="{% url 'events:show-venue' venue.id %}"> {{ venue }}</a>
+                    </td>
+                    <td>
+                        <a href="{% url 'events:venue-event' venue.id %}"> List of Events</a>
+                    </td> 
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+    <!-- Approvals forms -->
+    <form action="" method="POST">
+        {% csrf_token %}
+        <br>
+        <h3>Admin Approvals</h3>
+        <br>
+
+        <table class="table table-striped table-hover table-bordered">
+            <thead align="center">
+                    <tr>
+                        <th>Event Name</th>
+                        <th>Approved</th>
+                    </tr>
+            </thead>
+            <tbody>
+                {% for event in allEventToApprove %}
+                    <tr>
+                        <td>{{ event }}</td>
+                        <td>
+                            {% if event.approveEvent %}
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" checked="checked" value={{event.id}} name="approvedCheckboxes">
+                                </div>
+                            {% else %}
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value={{event.id}} name="approvedCheckboxes">
+                                </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <br>
+
+        <input class="btn btn-outline-success btn-sm" type="submit" value="Update"> 
+    </form>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% endblock %}

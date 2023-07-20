@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        <center>
+            <h1>Add Venue</h1>
+            <hr>
+            <br>
+            USER ID: {{ user.id }}
+            <br><br>
+        </center> 
+
+        {% if submitted %}
+            Your Venue Was Submitted Successfully!!!
+            {{ python_diamond_pattern  }}
+            
+        {% else %}
+            <!-- Add forms -->
+
+            <form action="" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <!-- add form to page -->
+                {{ addVenueForm.as_p }}
+
+                <div align="right">
+                    <input class="btn btn-outline-success" type="submit" value="Submit"/>
+                </div>
+
+            </form>
+        {% endif %}   
+    {% else%}
+        <div class="alert alert-danger d-flex alert-dismissible fade show" role="alert">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+            <strong>
+                <p>Sorry You have to Log in first...</p>                
+            </strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <a href="{% url 'members:login-Page' %}">Login Here</a>
+    {% endif%}
+    
+
+
+{% endblock %}
